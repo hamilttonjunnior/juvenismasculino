@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Académicos - Sistema Anual de Treino (Juvenis / Cadetes Masculino)</title>
+    <style>
+        :root {
+            --bg-color: #fcfcfc;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #555555;
+            --border: #e0e0e0;
+            --border-dark: #111111;
+            --gray-light: #f4f4f5;
+            --gray-dark: #18181b;
+            --accent-black: #09090b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--border-dark);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            background-color: var(--gray-light);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px 18px;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-black);
+            color: white;
+            border-color: var(--accent-black);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        select {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-dark);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .phase-badge {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: 1px solid var(--border-dark);
+            background-color: #27272a;
+            color: #ffffff;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-black);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media(max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            header { flex-direction: column; align-items: flex-start; }
+            select { max-width: 100%; }
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title span {
+            background-color: var(--accent-black);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        ul {
+            margin: 0 0 18px 0;
+            padding-left: 18px;
+            color: #27272a;
+            font-size: 0.9rem;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .info-box {
+            background-color: var(--gray-light);
+            border-left: 4px solid var(--accent-black);
+            padding: 12px 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-top: 15px;
+        }
+
+        .notes-area {
+            width: 100%;
+            height: 80px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 6px;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-top: 8px;
+            font-family: inherit;
+        }
+
+        .check-btn {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-dark);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .check-btn.completed {
+            background-color: var(--accent-black);
+            color: white;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-dark);
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-black);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-left">
+            <img src="logo.png" alt="FC Académicos" class="logo" onerror="this.style.display='none'">
+            <div>
+                <h1>FC Académicos</h1>
+                <p class="subtitle">Guia de Treino de Terça-Feira | Juvenis / Cadetes Masculino (60 min)</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- ABAS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('mapa')">📅 Treino Completo da Terça (60 min)</button>
+        <button class="tab-btn" onclick="switchTab('aquecimento')">🏐 Aquecimento Variado da Semana (Quadra)</button>
+        <button class="tab-btn" onclick="switchTab('ginasio')">🏋️ Guia de Treino de Ginásio (Futuro)</button>
+    </div>
+
+    <!-- ABA 1: MAPA SEMANAL (TERÇA-FEIRA) -->
+    <div id="tab-mapa" class="tab-content active">
+        <div class="controls">
+            <label for="weekSelect"><strong>Selecionar Terça-feira:</strong></label>
+            <select id="weekSelect" onchange="renderWeek()"></select>
+            <span id="phaseBadge" class="phase-badge">Fase</span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 id="weekTitle">Treino #1</h2>
+                <button id="checkBtn" class="check-btn" onclick="toggleCompleted()">
+                    <span id="checkIcon">◯</span> <span id="checkText">Marcar Concluído</span>
+                </button>
+            </div>
+
+            <p style="margin-bottom: 18px; font-size: 0.95rem;"><strong>Foco Específico:</strong> <span id="weekFocus" style="color: var(--gray-dark); font-weight: 600;">-</span></p>
+
+            <div class="grid-2">
+                <div>
+                    <div class="section-title"><span>10 MIN</span> Aquecimento & Core na Quadra</div>
+                    <ul id="prehabList"></ul>
+
+                    <div class="section-title"><span>10 MIN</span> Saltos Verticais, Chamadas & Caixas (Plyo)</div>
+                    <ul id="plyoList"></ul>
+                </div>
+                <div>
+                    <div class="section-title"><span>10 MIN</span> Agilidade, Deslocamentos & Braços (Speed)</div>
+                    <ul id="speedList"></ul>
+
+                    <div class="section-title"><span>15 MIN</span> Bloco de Força com Material do Pavilhão</div>
+                    <ul id="strengthList"></ul>
+                </div>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <div class="section-title"><span>15 MIN</span> Bloco Tático com Bola de Vôlei na Quadra</div>
+                <ul id="ballList"></ul>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 Gestão de Carga (60 min):</strong> O aquecimento dura 10 min. Os 35 min centrais focam na potência de salto e força específica (com exigência adaptada ao masculino). Os 15 min finais são aplicados no jogo 6x6.
+            </div>
+
+            <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+                <label for="notes"><strong>Anotações do Treinador:</strong></label>
+                <textarea id="notes" class="notes-area" placeholder="Anotar presença, desempenho ou ajustes..." oninput="saveNotes()"></textarea>
+            </div>
+        </div>
+
+        <div class="footer-nav">
+            <button class="nav-btn" onclick="changeWeek(-1)">← Terça Anterior</button>
+            <button class="nav-btn" onclick="changeWeek(1)">Próxima Terça →</button>
+        </div>
+    </div>
+
+    <!-- ABA 2: AQUECIMENTO VARIADO (QUADRA) -->
+    <div id="tab-aquecimento" class="tab-content">
+        <div class="card">
+            <h2 id="warmupTitle">🏐 Aquecimento de Quadra da Semana</h2>
+            <p style="margin-bottom: 15px; color: var(--text-muted); font-size: 0.9rem;">Duração total: 10 a 12 minutos. Esta rotina varia os exercícios de deslocamento e materiais mantendo a base de proteção muscular.</p>
+
+            <div class="grid-2">
+                <div>
+                    <div class="section-title"><span>Passo 1</span> Deslocamentos Explosivos nas Linhas da Quadra (4 min)</div>
+                    <ul id="warmupStep1"></ul>
+
+                    <div class="section-title"><span>Passo 2</span> Core, Estabilidade & Lombar (4 min)</div>
+                    <ul id="warmupStep2"></ul>
+                </div>
+                <div>
+                    <div class="section-title"><span>Passo 3</span> Ativação de Peito, Pernas & Ombros (3 min)</div>
+                    <ul id="warmupStep3"></ul>
+
+                    <div class="info-box">
+                        <strong>📌 Nota do Treinador:</strong> Cuidar da intensidade no aquecimento para preservar as articulações e potenciar o rendimento máximo nos saltos e bloqueios.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABA 3: GUIA FUTURO DE GINÁSIO -->
+    <div id="tab-ginasio" class="tab-content">
+        <div class="card">
+            <h2>🏋️ Guia de Treino de Musculação (Sala de Pesos - Masculino)</h2>
+            <p style="margin-bottom: 15px; color: var(--text-muted); font-size: 0.9rem;">Estrutura ideal para o escalão masculino em transição para alta performance de salto.</p>
+
+            <div class="grid-2">
+                <div>
+                    <div class="section-title"><span>Pré-Temporada</span> Força Geral</div>
+                    <ul>
+                        <li><strong>Agachamento Completo com Barra:</strong> 3 séries × 10-12 repetições | Descanso: 90s.</li>
+                        <li><strong>Supino com Barra / Halteres:</strong> 3 séries × 10 repetições | Descanso: 60s.</li>
+                        <li><strong>Puxada Alta na Máquina / Barra:</strong> 3 séries × 10 repetições | Descanso: 60s.</li>
+                        <li><strong>Stiff com Barra:</strong> 3 séries × 10 repetições | Descanso: 90s.</li>
+                    </ul>
+
+                    <div class="section-title"><span>Fase Principal</span> Força Máxima / Hipertrofia Funcional</div>
+                    <ul>
+                        <li><strong>Agachamento Pesado com Barra:</strong> 4 séries × 5 repetições | Descanso: 2 min.</li>
+                        <li><strong>Supino Pesado com Barra:</strong> 4 séries × 5 repetições | Descanso: 2 min.</li>
+                        <li><strong>Subida no Banco com Barra (Bulgarian Split Squat):</strong> 3 séries × 6 repetições por perna | Descanso: 90s.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="section-title"><span>Fase Competitiva</span> Potência de Salto</div>
+                    <ul>
+                        <li><strong>Agachamento com Salto (Jump Squat com Carga Leve):</strong> 3 séries × 5 saltos explosivos | Descanso: 90s.</li>
+                        <li><strong>Salto Trap Bar (Explosivo):</strong> 3 séries × 4 saltos | Descanso: 90s.</li>
+                        <li><strong>Lançamento de Bola Medicinal (Med Ball Slam):</strong> 3 séries × 6 arremessos fortes.</li>
+                    </ul>
+
+                    <div class="section-title"><span>Fase Final (Taper)</span> Velocidade & Reatividade</div>
+                    <ul>
+                        <li><strong>Agachamento Curto Rápido (¼ Squat):</strong> 3 séries × 3 repetições a 80% da carga | Descanso: 2 min.</li>
+                        <li><strong>Saltos Reativos em Caixa (Drop Jump):</strong> 3 séries × 4 saltos rápidos e curtos no solo.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const startDate = new Date(2026, 8, 15); // 15 Setembro 2026
+    const totalWeeks = 52;
+    
+    // VARIANTES DE AQUECIMENTO ROTATIVO (4 Semanas em Ciclo) - Ajustadas para Masculino
+    const warmupWeeklyMap = [
+        {
+            s1: [
+                "Deslocamento Lateral Defensivo Rápido até 6m -> Transição para Sprint até ao fundo (2 voltas).",
+                "Skipping alto e agressivo até 3m -> Calcanhares aos glúteos -> Aceleração máxima de 6m (2 passagens)."
+            ],
+            s2: [
+                "Prancha Frontal (Anti-Extensão): 2 séries × 40 segundos no chão.",
+                "Prancha Lateral com Elevação: 2 séries × 25 segundos por lado.",
+                "Dead Bug Controlado: 2 séries × 10 repetições por perna.",
+                "Extensão Lombar (Super-homem): 2 séries × 30 segundos."
+            ],
+            s3: [
+                "Flexões de Braço Dinâmicas: 2 séries × 12 repetições.",
+                "Isometria na Parede a 90° (Wall Sit): 2 séries × 40 segundos.",
+                "Ponte de Glúteos Dinâmica: 2 séries × 12 repetições."
+            ]
+        },
+        {
+            s1: [
+                "Corrida de Costas até aos 3m -> Giro rápido de 180° e Sprint frontal até aos 6m (2 voltas).",
+                "Passos largos em Afundo (Lunge) com Rotação de Tronco: 1 série × 6 passos por perna."
+            ],
+            s2: [
+                "Prancha com Toque Alternado nos Ombros: 2 séries × 30 segundos.",
+                "Abdominal Canivete / Rotação com Bola de Vôlei: 2 séries × 15 repetições.",
+                "Ponte de Glúteos Unilateral: 2 séries × 10 repetições por perna.",
+                "Super-homem Sustentado com Puxada de Braços: 2 séries × 25 segundos."
+            ],
+            s3: [
+                "Flexões com Apoio Elevado: 2 séries × 12 repetições.",
+                "Agachamento com Peso Corporal + Elevação de Panturrilhas: 2 séries × 15 repetições.",
+                "Arremesso de Bola Medicinal de 2kg contra o Chão: 2 séries × 8 lançamentos."
+            ]
+        },
+        {
+            s1: [
+                "Saltos Seguidos com Pés Juntos na Escada de Agilidade -> Sprint de 6m em velocidade máxima (2 passagens).",
+                "Passada Lateral com Miniband Pesada nos Joelhos: 2 séries × 10 passos para cada lado."
+            ],
+            s2: [
+                "Prancha Frontal com Elevação Alternada de Pés: 2 séries × 30 segundos.",
+                "Prancha Lateral com Rotação Torácica: 2 séries × 20 segundos por lado.",
+                "Dead Bug com Paragem de 2 segundos: 2 séries × 10 repetições por perna.",
+                "Extensão Lombar Alternada: 2 séries × 12 repetições."
+            ],
+            s3: [
+                "Flexões Fechadas (Foco em Tríceps/Peito): 2 séries × 10 repetições.",
+                "Agachamento Isométrico na Parede com Impulsão de Joelho: 2 séries × 25 segundos.",
+                "Arremesso de Bola Pesada (3kg) de Peito contra a Parede: 2 séries × 6 arremessos."
+            ]
+        },
+        {
+            s1: [
+                "Deslocamento em ZIG-ZAG apertado em 4 Cones (Mudança de direção agressiva) + Sprint (2 voltas).",
+                "Saltos de Corda em Ritmo Forte: 2 séries × 50 segundos."
+            ],
+            s2: [
+                "Pallof Press com Elástico Resistente: 2 séries × 10 repetições por lado.",
+                "Abdominal Infra (Elevação de pernas controlada): 2 séries × 15 repetições.",
+                "Ponte de Glúteos com Cadência Lenta: 2 séries × 12 repetições.",
+                "Super-homem Oposto (Cruzado): 2 séries × 12 repetições."
+            ],
+            s3: [
+                "Flexões Explosivas (Com saída de mãos do solo): 2 séries × 8 repetições.",
+                "Afundo Estático Dinâmico: 2 séries × 10 repetições por perna.",
+                "Rotação de Ombro com Elástico na Rede: 2 séries × 12 repetições por braço."
+            ]
+        }
+    ];
+
+    const plyoVariations = [
+        [
+            "Salto para Caixa Alta / Módulos de Ginásio (Plyo Box Masculino): 3 séries × 5 saltos (Aterrissagem controlada e estável). Descanso: 75s.",
+            "Chamada de Ataque Completa (3 Passos Explosivos): 3 séries × 5 entradas (Foco em travagem e explosão vertical). Descanso: 60s.",
+            "Saltos Contínuos sobre Barreiras Médias/Altas: 3 séries × 6 saltos. Descanso: 60s."
+        ],
+        [
+            "Drop Jump de Caixa Média + Salto Vertical Máximo: 3 séries × 4 saltos (Reatividade e tempo de contacto mínimo no solo). Descanso: 90s.",
+            "Saltos Unilaterais Dinâmicos sobre Obstáculo: 3 séries × 4 saltos por perna. Descanso: 60s.",
+            "Salto de Bloqueio com Deslocamento Lateral Amplo na Rede: 3 séries × 5 saltos. Descanso: 60s."
+        ],
+        [
+            "Salto Horizontal Largo + Transição Imediata para Salto de Ataque: 3 séries × 4 sequências. Descanso: 75s.",
+            "Saltos em Barreiras Altas com Puxada Ativa de Joelhos ao Peito: 3 séries × 5 saltos. Descanso: 75s.",
+            "Ataque Explosivo com Saco de Peso / Bola Medicinal (2-3kg): 3 séries × 8 arremessos ao chão. Descanso: 60s."
+        ],
+        [
+            "Escada de Agilidade (Entrada rápida) + Salto de Bloqueio em Altura Máxima na Rede: 3 séries × 4 passagens. Descanso: 60s.",
+            "Chamada de Ataque com Carga Leve nas Mãos (Halteres leves ou Bola Medicinal): 3 séries × 4 entradas. Descanso: 60s.",
+            "Saltos Laterais Contínuos sobre Banco de Quadra: 3 séries × 6 saltos alternados. Descanso: 60s."
+        ]
+    ];
+
+    const speedVariations = [
+        [
+            "Escada de Agilidade (1 pé por espaço - alta rotação): 3 séries × 2 passagens máximas. Descanso: 45s.",
+            "Arranque Explosivo de Defesa (0 aos 6m): 3 séries × 3 piques curtos. Descanso: 60s.",
+            "Lançamento de Bola Medicinal (3kg) de Peito contra a Parede: 3 séries × 6 arremessos. Descanso: 45s."
+        ],
+        [
+            "Escada de Agilidade (Passos Laterais Cruzados): 3 séries × 2 passagens. Descanso: 45s.",
+            "Mudança de Direção em Z (4 Cones - intensidade máxima): 3 séries × 3 repetições. Descanso: 60s.",
+            "Arremesso de Ataque com Bola Medicinal de 2kg contra a Parede: 3 séries × 6 repetições. Descanso: 45s."
+        ],
+        [
+            "Saltos de Corda em Duplo Ritmo / Rápido: 3 séries × 50 segundos. Descanso: 30s.",
+            "Deslocamento de Cobertura e Defesa Profunda entre Cones: 3 séries × 4 repetições. Descanso: 45s.",
+            "Passe de Bola Medicinal (2kg) por cima da Cabeça: 3 séries × 8 arremessos. Descanso: 45s."
+        ],
+        [
+            "Escada de Agilidade (Tesoura / In-Out Lateral): 3 séries × 2 passagens. Descanso: 45s.",
+            "Reação Defensiva a Sinal Sonoro do Treinador: 3 séries × 4 piques curtos. Descanso: 60s.",
+            "Lançamento de Bola Medicinal (2-3kg) com Rotação de Tronco: 3 séries × 5 por lado. Descanso: 60s."
+        ]
+    ];
+
+    const strengthVariations = [
+        [
+            "Agachamento com Bola Medicinal / Saco Pesado no Peito (3-5kg): 3 séries × 12 repetições. Descanso: 60s.",
+            "Flexões de Braço com Pés Elevados no Banco: 3 séries × 12 repetições. Descanso: 60s.",
+            "Afundos Alternados com Carga (Lunge): 3 séries × 10 passos por perna. Descanso: 60s.",
+            "Prancha Abdominal com Toque Dinâmico nos Ombros: 3 séries × 40 segundos. Descanso: 45s."
+        ],
+        [
+            "Agachamento Búlgaro a 1 Perna no Banco com Carga (3kg): 3 séries × 8 repetições por perna. Descanso: 75s.",
+            "Remada com Elástico Forte Preso na Rede: 3 séries × 12 repetições. Descanso: 45s.",
+            "Elevação Pélvica / Hip Thrust com Saco de Peso: 3 séries × 12 repetições. Descanso: 60s.",
+            "Prancha Lateral com Elevação Dinâmica de Anca: 3 séries × 30 segundos por lado. Descanso: 45s."
+        ],
+        [
+            "Subida Explosiva no Banco com Impulsão de Joelho (Step-up com carga): 3 séries × 8 repetições por perna. Descanso: 60s.",
+            "Desenvolvimento de Ombros com Saco / Bola Medicinal: 3 séries × 10 repetições. Descanso: 60s.",
+            "Stiff com Saco de Peso (RDL Hinge): 3 séries × 10 repetições. Descanso: 60s.",
+            "Abdominal Canivete / Rotação com Bola de 2kg: 3 séries × 12 repetições. Descanso: 45s."
+        ],
+        [
+            "Agachamento Curto Explosivo com Carga (¼ Squat rápido): 3 séries × 8 repetições explosivas. Descanso: 60s.",
+            "Lançamento de Peito Explosivo com Bola Medicinal (Med Ball Throw): 3 séries × 6 arremessos. Descanso: 60s.",
+            "Saltos Unilaterais em 1 Perna na Escada de Agilidade: 3 séries × 1 passagem por perna. Descanso: 45s.",
+            "Puxada de Elástico com Rotação Anti-Rotacional (Pallof Press): 3 séries × 10 repetições por lado. Descanso: 45s."
+        ]
+    ];
+
+    const ballVariations = [
+        [
+            "Recepção de Saque Potente (K1): Passe rigoroso para Zona 2/3 -> Entrada rápida do Distribuidor -> Ataque de Ponta/Meio (15 min).",
+            "Jogo Coletivo Dirigido (6x6): Set iniciado em 15-15. Regra: Obrigatoriedade de cobertura dupla rápida em todas as bolas de ataque alto."
+        ],
+        [
+            "Complexo de Defesa & Bloqueio Duplo/Triplo (K2): Saque forte flutuante/viagem -> Ajuste de bloco fechado -> Transição para contra-ataque rápido (15 min).",
+            "Jogo Reduzido 4x4 em Quadra Reduzida: Foco em reflexos, defesas difíceis e distribuição rápida."
+        ],
+        [
+            "Treino Específico de Sintonização de Tempo: Distribuidor e Atacantes (Meios e Entradas) com foco em velocidade de bola tensor (15 min).",
+            "Simulação de Fim de Set Sob Pressão (20-20): A equipa que cometer erro não forçado perde 2 pontos no marcador."
+        ],
+        [
+            "Saque Direcionado por Zonas & Organização do Bloco-Defesa: 15 minutos focados em limitar a construção adversária.",
+            "Jogo Coletivo Livre 6x6 com exigência máxima de comunicação verbal alta ('Minha!', 'Fora!', 'Fechado!') e liderança em campo."
+        ]
+    ];
+
+    let weeksData = [];
+
+    for(let i = 0; i < totalWeeks; i++) {
+        let currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + (i * 7));
+        let dateStr = currentDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        
+        let phase = "";
+        let strength = [];
+
+        if(i < 8) {
+            phase = "Resistência de Força & Base (Preparatório Geral)";
+            strength = strengthVariations[0];
+        } else if(i >= 8 && i < 20) {
+            phase = "Força Máxima & Potência Vertical (Preparatório Específico)";
+            strength = strengthVariations[1];
+        } else if(i >= 20 && i < 38) {
+            phase = "Força-Potência & Salto Máximo (Fase de Campeonato)";
+            strength = strengthVariations[2];
+        } else {
+            phase = "Pico de Forma, Reatividade & Taper";
+            strength = strengthVariations[3];
+        }
+
+        let pIdx = i % 4;
+
+        weeksData.push({
+            id: i,
+            date: dateStr,
+            title: `Treino #${i+1} (${dateStr})`,
+            phase: phase,
+            focus: i % 2 === 0 ? "Saltos na Caixa Alta + Chamadas de Ataque Potente + K1" : "Velocidade na Escada + Barreiras + Bloco/Defesa (K2)",
+            prehab: [
+                "Aquecimento Dinâmico de Quadra (Aba 2): 10 a 12 minutos",
+                "Mobilidade Completa de Anca, Joelhos e Tornozelos",
+                "Ativação Específica de Ombros (Manguito) e Core"
+            ],
+            plyo: plyoVariations[pIdx],
+            speed: speedVariations[pIdx],
+            strength: strength,
+            ball: ballVariations[pIdx],
+            warmup: warmupWeeklyMap[pIdx],
+            completed: false,
+            notes: ""
+        });
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        event.target.classList.add('active');
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+    }
+
+    function loadStorage() {
+        const saved = localStorage.getItem('fc_academicos_mapa_treino_masc_v1');
+        if(saved) {
+            const parsed = JSON.parse(saved);
+            parsed.forEach((item, idx) => {
+                if(weeksData[idx]) {
+                    weeksData[idx].completed = item.completed;
+                    weeksData[idx].notes = item.notes;
+                }
+            });
+        }
+    }
+
+    function saveStorage() {
+        const toSave = weeksData.map(w => ({ completed: w.completed, notes: w.notes }));
+        localStorage.setItem('fc_academicos_mapa_treino_masc_v1', JSON.stringify(toSave));
+    }
+
+    function init() {
+        loadStorage();
+        const select = document.getElementById('weekSelect');
+        select.innerHTML = '';
+        
+        weeksData.forEach((w, idx) => {
+            let opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = `${w.date} - ${w.phase}`;
+            select.appendChild(opt);
+        });
+
+        renderWeek();
+    }
+
+    function renderWeek() {
+        const select = document.getElementById('weekSelect');
+        currentWeekIndex = parseInt(select.value) || 0;
+        const w = weeksData[currentWeekIndex];
+
+        document.getElementById('weekTitle').textContent = w.title;
+        document.getElementById('weekFocus').textContent = w.focus;
+        
+        const badge = document.getElementById('phaseBadge');
+        badge.textContent = w.phase;
+
+        fillList('prehabList', w.prehab);
+        fillList('plyoList', w.plyo);
+        fillList('speedList', w.speed);
+        fillList('strengthList', w.strength);
+        fillList('ballList', w.ball);
+
+        document.getElementById('warmupTitle').textContent = `🏐 Aquecimento Específico (${w.date})`;
+        fillList('warmupStep1', w.warmup.s1);
+        fillList('warmupStep2', w.warmup.s2);
+        fillList('warmupStep3', w.warmup.s3);
+
+        const checkBtn = document.getElementById('checkBtn');
+        if(w.completed) {
+            checkBtn.className = "check-btn completed";
+            document.getElementById('checkIcon').textContent = "✓";
+            document.getElementById('checkText').textContent = "Treino Concluído";
+        } else {
+            checkBtn.className = "check-btn";
+            document.getElementById('checkIcon').textContent = "◯";
+            document.getElementById('checkText').textContent = "Marcar Concluído";
+        }
+
+        document.getElementById('notes').value = w.notes || "";
+    }
+
+    function fillList(id, arr) {
+        const ul = document.getElementById(id);
+        ul.innerHTML = '';
+        arr.forEach(item => {
+            let li = document.createElement('li');
+            li.textContent = item;
+            ul.appendChild(li);
+        });
+    }
+
+    function toggleCompleted() {
+        weeksData[currentWeekIndex].completed = !weeksData[currentWeekIndex].completed;
+        saveStorage();
+        renderWeek();
+    }
+
+    function saveNotes() {
+        weeksData[currentWeekIndex].notes = document.getElementById('notes').value;
+        saveStorage();
+    }
+
+    function changeWeek(dir) {
+        let newIdx = currentWeekIndex + dir;
+        if(newIdx >= 0 && newIdx < totalWeeks) {
+            document.getElementById('weekSelect').value = newIdx;
+            renderWeek();
+        }
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
