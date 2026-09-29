@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Volei Pro - Gestão Juvenis Masculino</title>
+    <!-- Configuração para o WhatsApp -->
+    <meta property="og:title" content="Volei Pro - Juvenis Masculino">
+    <meta property="og:description" content="Plataforma de Gestão Tática e Estatística em Tempo Real (Motor DataVolley).">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hamilttonjunnior.github.io/juvenismasculino/">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root { 
+            --bg: #121214; 
+            --card: #1f1f23; 
+            --card-inner: #27272a;
+            --primary: #f4f4f5; 
+            --accent: #f43f5e; 
+            --success: #22c55e; 
+            --warning: #f1c40f; 
+            --sub-fixed: #f59e0b;
+            --sub-exceptional: #c084fc;
+            --white: #ffffff; 
+            --gray-light: #a1a1aa;
+            --border: #3f3f46; 
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--white); margin: 0; padding-bottom: 110px; overflow-x: hidden; }
+        
+        #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 3000; }
+        .login-box { background: var(--card); backdrop-filter: blur(20px); padding: 35px; border-radius: 28px; border: 1px solid var(--border); text-align: center; width: 85%; max-width: 320px; }
+        .login-box input { width: 100%; padding: 14px; margin: 20px 0; border-radius: 12px; border: 1px solid var(--border); background: var(--card-inner); color: white; text-align: center; box-sizing: border-box; font-size: 16px; }
+        
+        header { padding: 15px; text-align: center; }
+        header h1 { margin: 0; font-size: 1rem; font-weight: 800; color: var(--white); }
+        
+        .nav-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 450px; background: rgba(31, 31, 35, 0.95); display: flex; padding: 6px; border-radius: 20px; border: 1px solid var(--border); z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        .nav-item { flex: 1; padding: 10px; text-align: center; font-size: 0.65rem; font-weight: 700; color: var(--gray-light); cursor: pointer; border-radius: 15px; transition: 0.3s; }
+        .nav-item.active { background: #3f3f46; color: var(--white); border: 1px solid #52525b; }
+        
+        .section { display: none; padding: 10px; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .game-info-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 18px; margin-bottom: 20px; max-width: 500px; margin: 0 auto 20px; }
+        .game-info-card input, .game-info-card select { width: 100%; padding: 10px; margin: 5px 0 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-inner); color: white; font-size: 0.85rem; box-sizing: border-box; }
+        .game-info-card label { font-size: 0.65rem; font-weight: 700; color: var(--gray-light); text-transform: uppercase; }
+        
+        #athlete-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-width: 900px; margin: 0 auto; }
+        .athlete-card { background: var(--card); border: 1px solid var(--border); padding: 10px 12px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .athlete-num { background: #3f3f46; color: var(--white); font-weight: 800; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.75rem; border: 1px solid #52525b; flex-shrink: 0; }
+        .btn-whatsapp { background: var(--success); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 5px; }
+        .btn-action-icon { background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 2px 4px; }
+        .btn-remove { color: var(--accent); }
+        .btn-edit { color: var(--warning); }
+        .role-select { background: var(--card-inner); color: var(--white); border: 1px solid var(--border); font-size: 0.6rem; font-weight: bold; border-radius: 4px; padding: 3px; margin-top: 3px; }
+        
+        #sets-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; padding: 10px; }
+        .set-mini-court { background: var(--card); border: 1px solid var(--border); padding: 12px; border-radius: 18px; }
+        .court-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .pos-box { background: var(--card-inner); padding: 6px 2px; border-radius: 8px; text-align: center; border: 1px solid transparent; }
+        .pos-box.occupied { border: 1px solid var(--gray-light); }
+        
+        .pos-box select { background: transparent !important; color: var(--white) !important; border: none !important; font-size: 0.7rem !important; font-weight: 800 !important; width: 100% !important; text-align: center !important; outline: none !important; appearance: none !important; -webkit-appearance: none !important; }
+        .pos-box option { background-color: var(--card-inner); color: white; }
+        .msg-regra { font-size: 0.65rem; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; min-height: 20px; line-height: 1.3; }
+        
+        .scoreboard { display: flex; justify-content: space-around; align-items: center; background: var(--card); padding: 15px; border-radius: 20px; margin-bottom: 5px; border: 1px solid var(--border); max-width: 400px; margin: 0 auto 5px; }
+        .score-num { font-size: 2.5rem; font-weight: 800; color: var(--white); display: block; cursor: pointer; }
+        .score-btn { background: #3f3f46; color: var(--white); border: 1px solid #52525b; padding: 12px; border-radius: 10px; font-weight: 800; width: 100%; margin-top: 10px; }
+        .score-btn.adv { background: var(--accent); color: white; border: none; }
+        
+        /* QUADRA LIVE */
+        .live-court { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; background: #1e3a8a; padding: 25px; border-radius: 15px; border: 2px solid white; max-width: 340px; margin: 0 auto; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .live-pos { background: rgba(255,255,255,0.15); aspect-ratio: 1; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; border: 1px solid rgba(255,255,255,0.4); position: relative; cursor: pointer; transition: 0.2s; padding: 4px; text-align: center; }
+        .live-pos:hover { background: rgba(255,255,255,0.3); }
+        .live-pos .num-display { font-size: 1.1rem; font-weight: 900; line-height: 1; }
+        .live-pos .nick-display { font-size: 0.62rem; font-weight: 700; color: #e2e8f0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+        
+        .live-pos.libero-active { background: var(--accent); color: white; border-color: white; }
+        .live-pos.substitute-active { background: #f59e0b; color: #121214; border-color: #fef08a; font-weight: 900; }
+        .live-pos.substitute-active .nick-display { color: #121214; }
+        .live-pos.exceptional-active { background: #a855f7; color: white; border-color: #f472b6; font-weight: 900; box-shadow: 0 0 12px rgba(168, 85, 247, 0.8); }
+        
+        .pos-label { font-size: 0.55rem; color: #cbd5e1; position: absolute; top: 4px; left: 6px; font-weight: 700; }
+        .server-ball { width: 12px; height: 12px; background: #fbbf24; border-radius: 50%; position: absolute; bottom: -5px; animation: bounce 0.6s infinite alternate; box-shadow: 0 0 10px #fbbf24; z-index: 10; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+        .switch { width: 36px; height: 20px; background: #3f3f46; border-radius: 20px; position: relative; appearance: none; cursor: pointer; outline: none; }
+        .switch:checked { background: var(--success); }
+        .switch::before { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: 0.2s; }
+        .switch:checked::before { left: 19px; }
+        
+        .tactic-hint { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 15px; max-width: 400px; margin: 20px auto; text-align: center; }
+        .tactic-title { color: var(--white); font-weight: 800; font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; }
+        .tactic-desc { font-size: 0.7rem; color: var(--gray-light); line-height: 1.4; }
+        
+        .log-item { background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid var(--gray-light); font-size: 0.85rem; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+        /* Módulos Scout */
+        .scout-atleta-selector { display: flex; overflow-x: auto; gap: 10px; padding: 15px 0; scrollbar-width: none; }
+        .scout-atleta-card { min-width: 85px; height: 70px; background: var(--card); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; padding: 0 6px; }
+        .scout-atleta-card.active { border-color: var(--success); background: var(--card-inner); transform: scale(1.05); }
+        .scout-atleta-card span { font-size: 10px; margin-top: 3px; text-align: center; color: var(--gray-light); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
+        .scout-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .scout-action-group { background: var(--card); padding: 12px; border-radius: 14px; border: 1px solid var(--border); }
+        .scout-action-group label { display: block; margin-bottom: 8px; font-size: 11px; color: var(--warning); font-weight: bold; text-transform: uppercase; }
+        .scout-btn-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+        
+        .scout-panel button { padding: 10px 2px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; text-align: center; }
+        .btn-star { background: #2563eb; color: white; }
+        .btn-plus { background: var(--success); color: white; }
+        .btn-slash { background: #64748b; color: white; }
+        .btn-minus { background: #f97316; color: white; }
+        .btn-equal { background: var(--accent); color: white; }
+
+        .scout-report-section { margin-top: 25px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 15px; overflow-x: auto; }
+        .scout-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 10px; text-align: center; color: var(--white); }
+        .scout-table th, .scout-table td { border: 1px solid var(--border); padding: 6px 3px; }
+        .scout-table th { background: var(--card-inner); font-weight: bold; color: var(--white); }
+        
+        .scout-controls { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .btn-print-tab { background: var(--success); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-clear-scout { background: #27272a; color: var(--gray-light); border: 1px solid var(--border); padding: 12px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
+
+        /* Modais */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 4000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; width: 100%; max-width: 340px; max-height: 85vh; overflow-y: auto; }
+        .modal-btn { width: 100%; padding: 12px; margin: 6px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        
+        .sub-return-hint {
+            background: rgba(245, 158, 11, 0.15) !important;
+            border: 1px solid var(--sub-fixed) !important;
+            color: #fef3c7 !important;
+        }
+        .btn-exceptional-trigger {
+            background: rgba(168, 85, 247, 0.2) !important;
+            border: 1px solid #a855f7 !important;
+            color: #f0abfc !important;
+            margin-top: 10px !important;
+        }
+    </style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-box">
+        <h1 style="color: var(--white); margin:0;">VOLEI PRO</h1>
+        <input type="password" id="passInput" placeholder="Senha">
+        <button onclick="checkPass()" style="width:100%; padding:14px; border-radius:12px; border:none; background:#3f3f46; color:var(--white); font-weight:800; border: 1px solid #52525b;">ENTRAR</button>
+    </div>
+</div>
+
+<header>
+    <h1 id="main-header-title">Juvenis Masculino - GESTÃO</h1>
+    <div id="sync-status" style="display:none; font-size: 0.5rem; color: var(--success); text-align: center;">● LIVE SYNC ACTIVO</div>
+</header>
+
+<div class="nav-bar">
+    <div class="nav-item active" id="btn-convocacao" onclick="showTab('convocacao')">CONVOCAR</div>
+    <div class="nav-item" id="btn-sets" onclick="showTab('sets')">QUADRA</div>
+    <div class="nav-item" id="btn-live" onclick="showTab('live')">LIVE</div>
+    <div class="nav-item" id="btn-scout" onclick="showTab('scout')">SCOUT</div>
+    <div class="nav-item" id="btn-logs" onclick="showTab('logs')">LOGS</div>
+</div>
+
+<!-- ABA CONVOCAÇÃO -->
+<section id="convocacao" class="section active">
+    <div class="game-info-card">
+        <label>Nome do Adversário / Jogo</label>
+        <input type="text" id="adv-name" placeholder="Ex: SC Braga" onchange="sync()">
+
+        <label>Prova / Torneio</label>
+        <input type="text" id="game-name" value="Novo Troféu AVB/AVVC Juvenis Masculino" onchange="sync()">
+        
+        <label>Local / Pavilhão</label>
+        <select id="pavilion-select" onchange="toggleOtherPavilion()">
+            <option value="ES ALCAIDES FARIA">ES ALCAIDES FARIA</option>
+            <option value="MUNICIPAL DE ADÃES">MUNICIPAL DE ADÃES</option>
+            <option value="outro">OUTRO (Digitar abaixo)</option>
+        </select>
+        <input type="text" id="other-pavilion" placeholder="Nome do Pavilhão" style="display:none;" onchange="sync()">
+
+        <div style="display:flex; gap:10px;">
+            <div style="flex:2;"><label>Data</label><input type="text" id="game-date" placeholder="Ex: 31/05/2026" onchange="sync()"></div>
+            <div style="flex:1;"><label>Hora</label><input type="text" id="game-time" placeholder="16H" onchange="sync()"></div>
+        </div>
+        <button class="btn-whatsapp" onclick="gerarMensagem()"><span>💬</span> Copiar WhatsApp</button>
+    </div>
+    
+    <div id="athlete-list"></div>
+
+    <div class="game-info-card" style="margin-top: 20px; border-style: dashed;">
+        <label>Adicionar Atleta ao Plantel</label>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:5px;">
+            <div style="display:flex; gap:5px;">
+                <input type="number" id="new-ath-num" placeholder="Nº" style="flex:1; margin:0;">
+                <input type="text" id="new-ath-name" placeholder="Nome Completo (Ex: Ana Clara)" style="flex:3; margin:0;">
+            </div>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="new-ath-nickname" placeholder="Apelido Opcional (Ex: Aninha)" style="flex:3; margin:0;">
+                <button onclick="addAthlete()" style="background:#3f3f46; border:1px solid #52525b; border-radius:8px; padding:10px 15px; color:var(--white); font-weight:800; flex:1;">+ ADD</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ABA CONFIGURAÇÃO DE QUADRA -->
+<section id="sets" class="section">
+    <div id="sets-container"></div>
+</section>
+
+<!-- ABA LIVE JOGO -->
+<section id="live" class="section">
+    <div style="text-align:center; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <select id="live-set-selector" onchange="changeSet(this.value)" style="width: auto; background: var(--card); padding: 8px 15px; border-radius: 12px; border: 1px solid var(--border); color: var(--white); font-weight: 800;">
+            <option value="1">SET 1</option><option value="2">SET 2</option><option value="3">SET 3</option><option value="4">SET 4</option><option value="5">SET 5</option>
+        </select>
+        <select id="initial-server-selector" onchange="setInitialServer(this.value)" style="width: auto; background: var(--card); padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border); color: #fbbf24; font-weight: 800;">
+            <option value="home">SAQUE INICIAL: FCA</option>
+            <option value="away">SAQUE INICIAL: ADV</option>
+        </select>
+        <div style="font-size: 0.7rem; font-weight: bold; background: var(--card); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border);">
+            SUBS SET: <span id="sub-counter-view" style="color: var(--warning);">0 / 6</span>
+        </div>
+    </div>
+
+    <div class="scoreboard">
+        <div style="text-align:center; flex:1;">
+            <span style="font-size:0.6rem; font-weight:800; color:var(--gray-light);">FCA</span>
+            <span class="score-num" id="score-home" onclick="removePoint('home')">0</span>
+            <button class="score-btn" onclick="addPoint('home')">+ PONTO</button>
+        </div>
+        <div style="font-weight:900; color:var(--gray-light); margin: 0 10px;">VS</div>
+        <div style="text-align:center; flex:1;">
+            <span style="font-size:0.6rem; font-weight:800; color:var(--gray-light);" id="adv-label">ADV</span>
+            <span class="score-num" id="score-away" onclick="removePoint('away')">0</span>
+            <button class="score-btn adv" onclick="addPoint('away')">+ PONTO</button>
+        </div>
+    </div>
+
+    <div class="live-court" id="live-court-render"></div>
+
+    <div class="tactic-hint" id="tactic-panel">
+        <div class="tactic-title" id="tactic-pos-title">SISTEMA TÁTICO</div>
+        <div class="tactic-desc" id="tactic-pos-desc">Defina a função das Passadoras (PAS) na aba Convocação para ver as instruções de transição em quadra.</div>
+    </div>
+    
+    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+        <button onclick="undoRotate()" style="background:none; border: 1px solid var(--border); color:var(--gray-light); padding: 8px 15px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">↺ VOLTAR ROTAÇÃO</button>
+        <button onclick="resetLive()" style="background:none; border: 1px solid var(--accent); color: var(--accent); padding: 8px 15px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">REINICIAR PLACAR</button>
+    </div>
+</section>
+
+<!-- MODAL DE EDIÇÃO DE ATLETA -->
+<div id="edit-atleta-modal" class="modal-overlay" onclick="closeEditModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="margin-top: 0; text-align: center; color: var(--white); font-size: 1rem;">Editar Atleta</h3>
+        <input type="hidden" id="edit-old-num">
+        <label style="font-size:0.65rem; color:var(--gray-light); font-weight:bold;">NÚMERO</label>
+        <input type="number" id="edit-ath-num" style="width:100%; padding:10px; margin:4px 0 12px; border-radius:8px; border:1px solid var(--border); background:var(--card-inner); color:white; box-sizing:border-box;">
+        
+        <label style="font-size:0.65rem; color:var(--gray-light); font-weight:bold;">NOME COMPLETO</label>
+        <input type="text" id="edit-ath-name" style="width:100%; padding:10px; margin:4px 0 12px; border-radius:8px; border:1px solid var(--border); background:var(--card-inner); color:white; box-sizing:border-box;">
+        
+        <label style="font-size:0.65rem; color:var(--gray-light); font-weight:bold;">APELIDO / NOME CURTO</label>
+        <input type="text" id="edit-ath-nickname" placeholder="Opcional" style="width:100%; padding:10px; margin:4px 0 15px; border-radius:8px; border:1px solid var(--border); background:var(--card-inner); color:white; box-sizing:border-box;">
+
+        <button class="modal-btn" style="background: var(--success); color: white;" onclick="saveAthleteEdit()">GUARDAR ALTERAÇÕES</button>
+        <button class="modal-btn" style="background: #27272a; color: white; border: 1px solid var(--border);" onclick="closeEditModal()">CANCELAR</button>
+    </div>
+</div>
+
+<!-- MODAL DE GESTÃO DE QUADRA -->
+<div id="sub-modal" class="modal-overlay" onclick="closeSubModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="margin-top: 0; text-align: center; color: var(--white); font-size: 1rem;" id="sub-modal-title">Gestão de Posição</h3>
+        <div id="modal-options-container"></div>
+        <button class="modal-btn" style="background: #27272a; color: white; border: 1px solid var(--border);" onclick="closeSubModal()">CANCELAR</button>
+    </div>
+</div>
+
+<!-- MÓDULO SCOUT -->
+<section id="scout" class="section">
+    <div style="text-align:center; margin-bottom: 10px;">
+        <label style="font-size: 0.75rem; font-weight: bold; color: var(--white);">REGISTAR SCOUT NO:</label>
+        <select id="scout-set-selector" onchange="changeScoutSet(this.value)" style="width: auto; background: var(--card); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); color: var(--warning); font-weight: 800; margin-left: 5px;">
+            <option value="1">SET 1</option><option value="2">SET 2</option><option value="3">SET 3</option><option value="4">SET 4</option><option value="5">SET 5</option>
+        </select>
+    </div>
+
+    <h3 id="scout-atleta-nome" style="text-align: center; color: var(--success);">Selecione uma atleta</h3>
+    
+    <div class="scout-atleta-selector" id="scout-lista-atletas"></div>
+    
+    <div class="scout-panel">
+        <div class="scout-action-group">
+            <label>Saque / Serviço</label>
+            <div class="scout-btn-grid">
+                <button class="btn-star" onclick="trackScout('serve', '#')"># Ace</button>
+                <button class="btn-plus" onclick="trackScout('serve', '+')">+</button>
+                <button class="btn-slash" onclick="trackScout('serve', '!')">!</button>
+                <button class="btn-minus" onclick="trackScout('serve', '-')">-</button>
+                <button class="btn-equal" onclick="trackScout('serve', '=')">= Erro</button>
+            </div>
+        </div>
+
+        <div class="scout-action-group">
+            <label>Recepção</label>
+            <div class="scout-btn-grid">
+                <button class="btn-star" onclick="trackScout('reception', '#')"># Perf</button>
+                <button class="btn-plus" onclick="trackScout('reception', '+')">+</button>
+                <button class="btn-slash" onclick="trackScout('reception', '!')">!</button>
+                <button class="btn-minus" onclick="trackScout('reception', '-')">-</button>
+                <button class="btn-equal" onclick="trackScout('reception', '=')">= Erro</button>
+            </div>
+        </div>
+
+        <div class="scout-action-group">
+            <label>Levantamento</label>
+            <div class="scout-btn-grid">
+                <button class="btn-star" onclick="trackScout('setting', '#')"># Perf</button>
+                <button class="btn-plus" onclick="trackScout('setting', '+')">+</button>
+                <button class="btn-slash" onclick="trackScout('setting', '!')">!</button>
+                <button class="btn-minus" onclick="trackScout('setting', '-')">-</button>
+                <button class="btn-equal" onclick="trackScout('setting', '=')">= Erro</button>
+            </div>
+        </div>
+
+        <div class="scout-action-group">
+            <label>Ataque</label>
+            <div class="scout-btn-grid">
+                <button class="btn-star" onclick="trackScout('attack', '#')"># Pto</button>
+                <button class="btn-plus" onclick="trackScout('attack', '+')">+</button>
+                <button class="btn-slash" onclick="trackScout('attack', '!')">!</button>
+                <button class="btn-minus" onclick="trackScout('attack', '-')">-</button>
+                <button class="btn-equal" onclick="trackScout('attack', '=')">= Erro</button>
+            </div>
+        </div>
+
+        <div class="scout-action-group">
+            <label>Bloqueio</label>
+            <div class="scout-btn-grid">
+                <button class="btn-star" onclick="trackScout('block', '#')"># Pto</button>
+                <button class="btn-plus" onclick="trackScout('block', '+')">+</button>
+                <button class="btn-slash" onclick="trackScout('block', '!')">!</button>
+                <button class="btn-minus" onclick="trackScout('block', '-')">-</button>
+                <button class="btn-equal" onclick="trackScout('block', '=')">= Erro</button>
+            </div>
+        </div>
+
+        <div class="scout-action-group">
+            <label>Defesa</label>
+            <div class="scout-btn-grid">
+                <button class="btn-star" onclick="trackScout('defense', '#')"># Perf</button>
+                <button class="btn-plus" onclick="trackScout('defense', '+')">+</button>
+                <button class="btn-slash" onclick="trackScout('defense', '!')">!</button>
+                <button class="btn-minus" onclick="trackScout('defense', '-')">-</button>
+                <button class="btn-equal" onclick="trackScout('defense', '=')">= Erro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela Live no App -->
+    <div class="scout-report-section">
+        <table class="scout-table">
+            <thead>
+                <tr>
+                    <th>Atleta</th>
+                    <th>Saque (Efi/Qld)</th>
+                    <th>Rec (Qld)</th>
+                    <th>Lev (Qld)</th>
+                    <th>Atk (Efi/Qld)</th>
+                    <th>Bloc (Efi/Qld)</th>
+                    <th>Def (Qld)</th>
+                </tr>
+            </thead>
+            <tbody id="scout-table-body"></tbody>
+        </table>
+    </div>
+    
+    <div class="scout-controls">
+        <button class="btn-print-tab" onclick="openPrintableReportWindow()">📄 Gerar Relatório DataVolley</button>
+        <button class="btn-clear-scout" onclick="resetScoutData()">↺ Zerar Scout</button>
+    </div>
+</section>
+
+<!-- ABA LOGS -->
+<section id="logs" class="section">
+    <div id="logs-container" style="max-width: 500px; margin: auto;"></div>
+    <button onclick="clearLogs()" style="width:100%; max-width: 500px; display: block; margin: 20px auto; background: var(--accent); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold;">LIMPAR HISTÓRICO</button>
+</section>
+
+<!-- SISTEMA INTEGRADO COM FIREBASE E MOTOR DATAVOLLEY -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCDutfInoNzTqoI3uzn9tjF-KCkibQuLPg",
+        authDomain: "juvenismasculino.firebaseapp.com",
+        projectId: "juvenismasculino",
+        storageBucket: "juvenismasculino.firebasestorage.app",
+        messagingSenderId: "1048569343563",
+        appId: "1:1048569343563:web:8c81c020cdef85a553e7ce",
+        measurementId: "G-79006F0BN5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const analytics = getAnalytics(app);
+
+    let state = { 
+        conv: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 
+        sets: {}, 
+        advName: "ADV", 
+        logs: [], 
+        gameName: "Novo Troféu AVB/AVVC Juvenis Masculino", 
+        gameDate: "31/05/2026", 
+        gameTime: "16H", 
+        pavilion: "ES ALCAIDES FARIA", 
+        otherPavilion: "",
+        roles: { 1: "PAS", 2: "PAS", 3: "ENT", 4: "ENT", 5: "ENT", 6: "ENT", 7: "OPO", 8: "CEN", 9: "CEN", 10: "CEN" },
+        atletas: [
+            {n: 1, nome: "Zita Macedo"}, {n: 2, nome: "Maria Luisa Baptista"}, {n: 3, nome: "Carla Rodriguez"},
+            {n: 4, nome: "Barbara Fernandes"}, {n: 5, nome: "Beatriz Brito"}, {n: 6, nome: "Matilde Loureiro"},
+            {n: 7, nome: "Maria Luisa Soutelo"}, {n: 8, nome: "Nataliia Karpets"}, {n: 9, nome: "Carolina Braga"}, {n: 10, nome: "Clara Pires"}
+        ],
+        scoutData: {} 
+    };
+
+    let liveState = { 
+        home: 0, 
+        away: 0, 
+        serving: 'home', 
+        initialServer: 'home',
+        currentLineup: [], 
+        originalLineup: [], 
+        substitutesLineup: [], 
+        exceptionalLineup: [false, false, false, false, false, false],
+        closedPositions: { "1": [], "2": [], "3": [], "4": [], "5": [] }, 
+        usedSubstitutes: { "1": [], "2": [], "3": [], "4": [], "5": [] }, 
+        currentSet: "1",
+        subsCount: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }
+    };
+    
+    let currentScoutSet = "1";
+    let selectedScoutAtleta = null;
+    let selectedIndexForSub = null; 
+
+    // ============================================================
+    // MOTOR DE CÁLCULOS ESTATÍSTICOS DATAVOLLEY
+    // ============================================================
+
+    const QUALITY_WEIGHTS = { "#": 1.00, "+": 0.75, "!": 0.50, "-": 0.25, "=": 0.00 };
+    const SETTING_WEIGHTS = { "#": 1.00, "+": 0.85, "!": 0.70, "-": 0.40, "=": 0.00 };
+
+    function calculateQuality(results, weights = QUALITY_WEIGHTS) {
+        if (!results || results.length === 0) return 0.0;
+        let totalScore = results.reduce((acc, symbol) => acc + (weights[symbol] !== undefined ? weights[symbol] : 0.0), 0.0);
+        return ((totalScore / results.length) * 100).toFixed(1);
+    }
+
+    function calculateActionStats(results, customWeights = QUALITY_WEIGHTS) {
+        if (!results || results.length === 0) {
+            return { attempts: 0, quality: "0.0", points: 0, errors: 0, efficiency: "0.0", counts: { "#":0, "+":0, "!":0, "-":0, "=":0 }, countsText: "" };
+        }
+        let attempts = results.length;
+        let points = results.filter(r => r === "#").length;
+        let errors = results.filter(r => r === "=").length;
+        let quality = calculateQuality(results, customWeights);
+        let efficiency = (((points - errors) / attempts) * 100).toFixed(1);
+
+        let counts = {
+            "#": points,
+            "+": results.filter(r => r === "+").length,
+            "!": results.filter(r => r === "!").length,
+            "-": results.filter(r => r === "-").length,
+            "=": errors
+        };
+
+        let parts = [];
+        ["#", "+", "!", "-", "="].forEach(sym => {
+            if (counts[sym] > 0) parts.push(`${sym}${counts[sym]}`);
+        });
+
+        return { attempts, quality, points, errors, efficiency, counts, countsText: parts.join(' ') };
+    }
+
+    function getDisplayName(atletaOrNum) {
+        if(!atletaOrNum || atletaOrNum === "?") return "?";
+        let ath = typeof atletaOrNum === 'object' ? atletaOrNum : state.atletas.find(a => String(a.n) === String(atletaOrNum));
+        if(!ath) return String(atletaOrNum);
+        
+        if(ath.nickname && ath.nickname.trim() !== "") return ath.nickname.trim();
+        
+        if(ath.nome && ath.nome.trim() !== "") {
+            let partes = ath.nome.trim().split(/\s+/);
+            if(partes.length >= 2) {
+                const ligacoes = ["de", "da", "do", "dos", "das", "e"];
+                if(ligacoes.includes(partes[1].toLowerCase()) && partes.length >= 3) {
+                    return `${partes[0]} ${partes[1]} ${partes[2]}`;
+                }
+                return `${partes[0]} ${partes[1]}`;
+            }
+            return partes[0];
+        }
+        return String(ath.n);
+    }
+
+    onSnapshot(doc(db, "gestao", "atual"), (snap) => {
+        if(snap.exists()) {
+            state = { ...state, ...snap.data() };
+            if (!state.scoutData) state.scoutData = {};
+            
+            document.getElementById('sync-status').style.display = 'block';
+            document.getElementById('adv-name').value = state.advName || "";
+            document.getElementById('adv-label').innerText = state.advName || "ADV";
+            document.getElementById('game-name').value = state.gameName || "";
+            document.getElementById('game-date').value = state.gameDate || "";
+            document.getElementById('game-time').value = state.gameTime || "";
+            document.getElementById('pavilion-select').value = state.pavilion || "ES ALCAIDES FARIA";
+            document.getElementById('other-pavilion').value = state.otherPavilion || "";
+            toggleOtherPavilion(false);
+        }
+        render();
+        renderScoutInterface();
+        if(liveState.currentLineup.length === 0) initLiveSet();
+    });
+
+    window.sync = async () => { 
+        state.advName = document.getElementById('adv-name').value.toUpperCase();
+        state.gameName = document.getElementById('game-name').value;
+        state.gameDate = document.getElementById('game-date').value;
+        state.gameTime = document.getElementById('game-time').value;
+        state.pavilion = document.getElementById('pavilion-select').value;
+        state.otherPavilion = document.getElementById('other-pavilion').value;
+        await setDoc(doc(db, "gestao", "atual"), state); 
+    };
+
+    window.checkPass = () => {
+        if(document.getElementById('passInput').value === 'volei2026') {
+            document.getElementById('login-screen').style.display = 'none';
+            render();
+            renderScoutInterface();
+        } else {
+            alert("Senha incorreta!");
+        }
+    };
+
+    window.showTab = (tab) => {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+        document.getElementById(tab).classList.add('active');
+        document.getElementById('btn-' + tab).classList.add('active');
+        if(tab === 'live') initLiveSet();
+    };
+
+    window.changeScoutSet = (s) => {
+        currentScoutSet = s;
+        renderScoutInterface();
+    };
+
+    window.trackScout = (fundamento, simbolo) => {
+        if(!selectedScoutAtleta) { alert("Selecione a atleta primeiro!"); return; }
+        if(!state.scoutData) state.scoutData = {};
+        if(!state.scoutData[currentScoutSet]) state.scoutData[currentScoutSet] = {};
+        
+        if(!state.scoutData[currentScoutSet][selectedScoutAtleta.n]) {
+            state.scoutData[currentScoutSet][selectedScoutAtleta.n] = {
+                serve: [], reception: [], setting: [], attack: [], block: [], defense: []
+            };
+        }
+        
+        let targetList = state.scoutData[currentScoutSet][selectedScoutAtleta.n][fundamento];
+        if(!Array.isArray(targetList)) {
+            targetList = [];
+            state.scoutData[currentScoutSet][selectedScoutAtleta.n][fundamento] = targetList;
+        }
+
+        targetList.push(simbolo);
+        sync();
+        if(navigator.vibrate) navigator.vibrate(50);
+    };
+
+    window.resetScoutData = () => {
+        if(confirm(`Tem certeza que deseja ZERAR todo o scout do SET ${currentScoutSet}?`)) {
+            if(state.scoutData && state.scoutData[currentScoutSet]) {
+                state.scoutData[currentScoutSet] = {};
+                sync();
+            }
+        }
+    };
+
+    function selectScoutAtleta(atleta) {
+        selectedScoutAtleta = atleta;
+        document.querySelectorAll('.scout-atleta-card').forEach(c => c.classList.remove('active'));
+        document.getElementById(`scout-atleta-${atleta.n}`).classList.add('active');
+        document.getElementById('scout-atleta-nome').innerText = `Scout (SET ${currentScoutSet}): Nº ${atleta.n} - ${getDisplayName(atleta)}`;
+    }
+
+    function renderScoutInterface() {
+        const lista = document.getElementById('scout-lista-atletas');
+        lista.innerHTML = "";
+        
+        state.atletas.sort((a,b)=>a.n-b.n).forEach(a => {
+            let div = document.createElement('div');
+            div.className = 'scout-atleta-card';
+            div.id = `scout-atleta-${a.n}`;
+            div.innerHTML = `<strong>${a.n}</strong><span>${getDisplayName(a)}</span>`;
+            div.onclick = () => selectScoutAtleta(a);
+            lista.appendChild(div);
+            if(selectedScoutAtleta && selectedScoutAtleta.n === a.n) {
+                div.classList.add('active');
+            }
+        });
+
+        const body = document.getElementById('scout-table-body');
+        body.innerHTML = "";
+        
+        const setData = state.scoutData[currentScoutSet] || {};
+        state.atletas.forEach(a => {
+            const raw = setData[a.n] || {};
+            
+            let serv = calculateActionStats(raw.serve);
+            let rec = calculateActionStats(raw.reception);
+            let setSt = calculateActionStats(raw.setting, SETTING_WEIGHTS);
+            let atk = calculateActionStats(raw.attack);
+            let bloc = calculateActionStats(raw.block);
+            let def = calculateActionStats(raw.defense);
+
+            body.innerHTML += `
+                <tr>
+                    <td style="font-weight:bold; text-align:left;">Nº ${a.n} (${getDisplayName(a)})</td>
+                    <td>${serv.attempts > 0 ? `${serv.efficiency}\% /${serv.quality}%` : '-'}</td>
+                    <td>${rec.attempts > 0 ? `${rec.quality}%` : '-'}</td>
+                    <td>${setSt.attempts > 0 ? `${setSt.quality}%` : '-'}</td>
+                    <td>${atk.attempts > 0 ? `${atk.efficiency}\% /${atk.quality}%` : '-'}</td>
+                    <td>${bloc.attempts > 0 ? `${bloc.efficiency}\% /${bloc.quality}%` : '-'}</td>
+                    <td>${def.attempts > 0 ? `${def.quality}%` : '-'}</td>
+                </tr>`;
+        });
+    }
+
+    function getTechnicalFeedback(raw) {
+        let atk = calculateActionStats(raw.attack);
+        let serv = calculateActionStats(raw.serve);
+        let bloc = calculateActionStats(raw.block);
+        let rec = calculateActionStats(raw.reception);
+        let feedbacks = [];
+
+        if (atk.attempts > 0) {
+            if (parseFloat(atk.efficiency) > 30.0) feedbacks.push("Excelente rendimento ofensivo com alta taxa de finalização.");
+            else if (parseFloat(atk.efficiency) < 0) feedbacks.push("Volume de erros de ataque superior aos pontos diretos.");
+        }
+        if (serv.attempts > 0) {
+            if (serv.counts["="] > (serv.counts["+"] + serv.counts["#"])) feedbacks.push("Consistência de saque abaixo do esperado (Alto índice de erros).");
+            else if (serv.counts["#"] >= 2) feedbacks.push("Saque muito agressivo gerando quebra constante na recepção adversária.");
+        }
+        if (bloc.counts["#"] >= 2) feedbacks.push("Excelente leitura de jogo e bloqueio efetivo.");
+        if (bloc.counts["="] > bloc.counts["#"]) feedbacks.push("Ajustar enquadramento de mãos no bloqueio para evitar exploração.");
+        if (rec.counts["="] > rec.counts["#"]) feedbacks.push("Ajustar posicionamento de base na recepção do serviço.");
+
+        return feedbacks.join(" ") || "Volume de jogo reduzido para diagnóstico aprofundado.";
+    }
+
+    window.openPrintableReportWindow = () => {
+        const printWindow = window.open('', '_blank');
+        const pav = state.pavilion === 'outro' ? state.otherPavilion : state.pavilion;
+        
+        let reportHTML = "";
+        let geralData = {};
+
+        ["1", "2", "3", "4", "5"].forEach(setNum => {
+            let setHtmlContent = "";
+            const setData = state.scoutData[setNum] || {};
+
+            state.atletas.forEach(a => {
+                const raw = setData[a.n];
+                if(!raw) return;
+                
+                let totalAcoes = (raw.serve||[]).length + (raw.reception||[]).length + (raw.setting||[]).length + (raw.attack||[]).length + (raw.block||[]).length + (raw.defense||[]).length;
+                if(totalAcoes === 0) return;
+
+                if (!geralData[a.n]) {
+                    geralData[a.n] = { nome: a.nome, nickname: a.nickname, role: state.roles[a.n]||'NÃO DEF.', serve:[], reception:[], setting:[], attack:[], block:[], defense:[] };
+                }
+                
+                ['serve','reception','setting','attack','block','defense'].forEach(f => {
+                    if(Array.isArray(raw[f])) geralData[a.n][f] = geralData[a.n][f].concat(raw[f]);
+                });
+
+                let serv = calculateActionStats(raw.serve);
+                let rec = calculateActionStats(raw.reception);
+                let setSt = calculateActionStats(raw.setting, SETTING_WEIGHTS);
+                let atk = calculateActionStats(raw.attack);
+                let bloc = calculateActionStats(raw.block);
+                let def = calculateActionStats(raw.defense);
+
+                setHtmlContent += `
+                    <div class="card">
+                        <div class="card-header"><span>Nº ${a.n} — ${a.nome} (${getDisplayName(a)})</span><span>FUNÇÃO: ${state.roles[a.n] || 'NÃO DEF.'}</span></div>
+                        <div class="grid">
+                            <div class="box">Saque (Efi / Qld)<strong>${serv.attempts > 0 ? `${serv.efficiency}\% /${serv.quality}%` : '-'}</strong><small>Att:${serv.attempts} (${serv.countsText})</small></div>
+                            <div class="box">Recepção (Qld)<strong>${rec.attempts > 0 ? `${rec.quality}%` : '-'}</strong><small>Att:${rec.attempts} (${rec.countsText})</small></div>
+                            <div class="box">Levantamento (Qld)<strong>${setSt.attempts > 0 ? `${setSt.quality}%` : '-'}</strong><small>Att:${setSt.attempts} (${setSt.countsText})</small></div>
+                            <div class="box">Ataque (Efi / Qld)<strong>${atk.attempts > 0 ? `${atk.efficiency}\% /${atk.quality}%` : '-'}</strong><small>Att:${atk.attempts} (${atk.countsText})</small></div>
+                            <div class="box">Bloqueio (Efi / Qld)<strong>${bloc.attempts > 0 ? `${bloc.efficiency}\% /${bloc.quality}%` : '-'}</strong><small>Att:${bloc.attempts} (${bloc.countsText})</small></div>
+                            <div class="box">Defesa (Qld)<strong>${def.attempts > 0 ? `${def.quality}%` : '-'}</strong><small>Att:${def.attempts} (${def.countsText})</small></div>
+                        </div>
+                    </div>`;
+            });
+
+            if (setHtmlContent !== "") {
+                reportHTML += `<h2 class="set-title">ESTATÍSTICAS TÁTICAS — SET ${setNum}</h2>` + setHtmlContent;
+            }
+        });
+
+        let geralHtmlContent = "";
+        Object.keys(geralData).forEach(athId => {
+            const g = geralData[athId];
+            const feedback = getTechnicalFeedback(g);
+            
+            let serv = calculateActionStats(g.serve);
+            let rec = calculateActionStats(g.reception);
+            let setSt = calculateActionStats(g.setting, SETTING_WEIGHTS);
+            let atk = calculateActionStats(g.attack);
+            let bloc = calculateActionStats(g.block);
+            let def = calculateActionStats(g.defense);
+
+            geralHtmlContent += `
+                <div class="card card-geral">
+                    <div class="card-header"><span>Nº ${athId} — ${g.nome} (${getDisplayName(g)})</span><span>BALANÇO GERAL DO JOGO</span></div>
+                    <div class="grid">
+                        <div class="box">Saque Efi / Qld<strong>${serv.attempts > 0 ? `${serv.efficiency}\% /${serv.quality}%` : '-'}</strong><small>Tot:${serv.attempts} (${serv.countsText})</small></div>
+                        <div class="box">Recepção Qld<strong>${rec.attempts > 0 ? `${rec.quality}%` : '-'}</strong><small>Tot:${rec.attempts} (${rec.countsText})</small></div>
+                        <div class="box">Levantamento Qld<strong>${setSt.attempts > 0 ? `${setSt.quality}%` : '-'}</strong><small>Tot:${setSt.attempts} (${setSt.countsText})</small></div>
+                        <div class="box">Ataque Efi / Qld<strong>${atk.attempts > 0 ? `${atk.efficiency}\% /${atk.quality}%` : '-'}</strong><small>Tot:${atk.attempts} (${atk.countsText})</small></div>
+                        <div class="box">Bloqueio Efi / Qld<strong>${bloc.attempts > 0 ? `${bloc.efficiency}\% /${bloc.quality}%` : '-'}</strong><small>Tot:${bloc.attempts} (${bloc.countsText})</small></div>
+                        <div class="box">Defesa Qld<strong>${def.attempts > 0 ? `${def.quality}%` : '-'}</strong><small>Tot:${def.attempts} (${def.countsText})</small></div>
+                    </div>
+                    <div class="feedback"><strong>Diretriz de Evolução Corretiva:</strong> ${feedback}</div>
+                </div>`;
+        });
+
+        if (geralHtmlContent !== "") {
+            reportHTML += `<hr style="border: 2px solid black; margin: 40px 0 20px 0;"><h2 class="set-title general-main-title">RESUMO CONSOLIDADO DO CONFRONTO</h2>` + geralHtmlContent;
+        } else {
+            reportHTML = "<p style='text-align:center; font-style:italic; padding:30px;'>Sem dados estatísticos registados para este plantel.</p>";
+        }
+
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Scout DataVolley — FCA vs ${state.advName}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; color: black; background: white; padding: 8mm; margin: 0; }
+                    .header { border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 15px; }
+                    .header h1 { margin: 0; font-size: 18px; text-transform: uppercase; letter-spacing: 0.5px; }
+                    .header p { margin: 3px 0 0; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #444; }
+                    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; margin-bottom: 15px; border-bottom: 1px dashed #000; padding-bottom: 8px; }
+                    .set-title { font-size: 13px; text-transform: uppercase; border-left: 4px solid black; padding-left: 6px; margin: 20px 0 10px 0; color: #111; letter-spacing: 0.5px; }
+                    .general-main-title { color: #e74c3c; border-left-color: #e74c3c; font-size: 15px; }
+                    .card { border: 1px solid black; border-radius: 4px; padding: 8px; margin-bottom: 10px; page-break-inside: avoid; background: #fff; }
+                    .card-geral { border: 2px dashed #000; }
+                    .card-header { display: flex; justify-content: space-between; font-weight: bold; border-bottom: 1px solid black; padding-bottom: 4px; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; }
+                    .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+                    .box { background: #f9f9f9; padding: 5px 2px; text-align: center; border: 1px solid #ccc; font-size: 9.5px; border-radius: 2px; }
+                    .box strong { display: block; font-size: 11px; margin-top: 2px; }
+                    .box small { display: block; font-size: 8px; color: #333; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                    .feedback { background: #f5f5f5; border-left: 3px solid black; padding: 6px 8px; font-size: 10px; font-style: italic; margin-top: 6px; line-height: 1.3; }
+                    @media print {
+                        body { padding: 0; }
+                        .box, .feedback { background: #fff !important; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Relatório Técnico DataVolley / FIVB</h1>
+                    <p>Mapeamento de Eficiência e Qualidade por Fundamento</p>
+                </div>
+                <div class="meta-grid">
+                    <div><strong>Competição:</strong> ${state.gameName}</div>
+                    <div><strong>Oponente:</strong> ${state.advName}</div>
+                    <div><strong>Localização:</strong> ${pav}</div>
+                    <div><strong>Data / Horário:</strong> ${state.gameDate} — ${state.gameTime}</div>
+                </div>
+                <div id="content">${reportHTML}</div>
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() { window.print(); }, 300);
+                    };
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    };
+
+    window.addAthlete = () => {
+        const n = parseInt(document.getElementById('new-ath-num').value);
+        const nome = document.getElementById('new-ath-name').value;
+        const nickname = document.getElementById('new-ath-nickname').value;
+        if(n && nome) { 
+            state.atletas.push({n, nome, nickname: nickname ? nickname.trim() : ""}); 
+            document.getElementById('new-ath-num').value = ''; 
+            document.getElementById('new-ath-name').value = ''; 
+            document.getElementById('new-ath-nickname').value = ''; 
+            sync(); 
+        }
+    };
+
+    window.openEditModal = (num) => {
+        const ath = state.atletas.find(a => a.n === num);
+        if(!ath) return;
+        document.getElementById('edit-old-num').value = ath.n;
+        document.getElementById('edit-ath-num').value = ath.n;
+        document.getElementById('edit-ath-name').value = ath.nome || "";
+        document.getElementById('edit-ath-nickname').value = ath.nickname || "";
+        document.getElementById('edit-atleta-modal').style.display = 'flex';
+    };
+
+    window.closeEditModal = () => {
+        document.getElementById('edit-atleta-modal').style.display = 'none';
+    };
+
+    window.saveAthleteEdit = () => {
+        const oldNum = parseInt(document.getElementById('edit-old-num').value);
+        const newNum = parseInt(document.getElementById('edit-ath-num').value);
+        const newName = document.getElementById('edit-ath-name').value.trim();
+        const newNick = document.getElementById('edit-ath-nickname').value.trim();
+
+        if(!newNum || !newName) { alert("Número e Nome são obrigatórios!"); return; }
+
+        let ath = state.atletas.find(a => a.n === oldNum);
+        if(ath) {
+            ath.n = newNum;
+            ath.nome = newName;
+            ath.nickname = newNick;
+
+            if(oldNum !== newNum) {
+                if(state.roles[oldNum]) {
+                    state.roles[newNum] = state.roles[oldNum];
+                    delete state.roles[oldNum];
+                }
+                state.conv = state.conv.map(n => n === oldNum ? newNum : n);
+            }
+            sync();
+            closeEditModal();
+        }
+    };
+
+    window.removeAthlete = (n) => { 
+        if(confirm(`Remover atleta nº ${n}?`)) { 
+            state.atletas = state.atletas.filter(a => a.n !== n); 
+            sync(); 
+        } 
+    };
+    window.updateRole = (n, role) => { state.roles[n] = role; sync(); };
+    window.toggleOtherPavilion = (doSync = true) => {
+        const sel = document.getElementById('pavilion-select').value;
+        document.getElementById('other-pavilion').style.display = sel === 'outro' ? 'block' : 'none';
+        if(doSync) sync();
+    };
+    window.toggle = (n) => { state.conv = state.conv.includes(n) ? state.conv.filter(i => i !== n) : [...state.conv, n]; sync(); render(); };
+    window.updatePos = (key, val) => { state.sets[key] = val; sync(); render(); };
+    window.gerarMensagem = () => {
+        const pav = state.pavilion === 'outro' ? state.otherPavilion : state.pavilion;
+        const convocadas = state.atletas.filter(a => state.conv.includes(a.n));
+        const passadoras = convocadas.filter(a => state.roles[a.n] === 'PAS').map(a => `➡️ Nº${a.n} ${getDisplayName(a)}`).join('\n');
+        const entradas = convocadas.filter(a => state.roles[a.n] === 'ENT').map(a => `➡️ Nº${a.n} ${getDisplayName(a)}`).join('\n');
+        const opostas = convocadas.filter(a => state.roles[a.n] === 'OPO').map(a => `➡️ Nº${a.n} ${getDisplayName(a)}`).join('\n');
+        const centrais = convocadas.filter(a => state.roles[a.n] === 'CEN').map(a => `➡️ Nº${a.n} ${getDisplayName(a)}`).join('\n');
+        const liberos = convocadas.filter(a => state.roles[a.n] === 'LIB').map(a => `➡️ Nº${a.n} ${getDisplayName(a)}`).join('\n');
+        let listaFormatada = '';
+        if(passadoras) listaFormatada += `\n🤜Passadoras:\n\n${passadoras}\n`;
+        if(entradas)   listaFormatada += `\n🤜Entradas:\n\n${entradas}\n`;
+        if(opostas)    listaFormatada += `\n🤜Opostas:\n\n${opostas}\n`;
+        if(centrais)   listaFormatada += `\n🤜Centrais:\n\n${centrais}\n`;
+        if(liberos)    listaFormatada += `\n🤜Líberos:\n\n${liberos}\n`;
+        let texto = `${state.gameName} \n\n🏟️    ${pav}\n\n📆    ${state.gameDate}\n⏰ ${state.gameTime}\n(Concentração 1h antes no local)\n\nCONVOCADAS:\n${listaFormatada}`;
+        navigator.clipboard.writeText(texto).then(() => alert("Copiado com sucesso!"));
+    };
+    function validarSet(s) {
+        const atual = [1,2,3,4,5,6].map(p => parseInt(state.sets[`s${s}p${p}`])).filter(n => !isNaN(n));
+        if (atual.length < 6) return { ok: false, msg: "A aguardar definição das 6 jogadoras..." };
+        return { ok: true, msg: "✓ Formação Válida." };
+    }
+    
+    window.initLiveSet = () => {
+        const s = liveState.currentSet;
+        liveState.originalLineup = [state.sets[`s${s}p4`] || "?", state.sets[`s${s}p3`] || "?", state.sets[`s${s}p2`] || "?", state.sets[`s${s}p5`] || "?", state.sets[`s${s}p6`] || "?", state.sets[`s${s}p1`] || "?"];
+        liveState.currentLineup = [...liveState.originalLineup];
+        liveState.substitutesLineup = [null, null, null, null, null, null];
+        liveState.exceptionalLineup = [false, false, false, false, false, false];
+        if (!liveState.usedSubstitutes[s]) liveState.usedSubstitutes[s] = [];
+        if (!liveState.closedPositions[s]) liveState.closedPositions[s] = [];
+        liveState.serving = liveState.initialServer;
+        const serverSelect = document.getElementById('initial-server-selector');
+        if(serverSelect) serverSelect.value = liveState.initialServer;
+        renderLive();
+    };
+
+    window.setInitialServer = (team) => {
+        liveState.initialServer = team;
+        if(liveState.home === 0 && liveState.away === 0) {
+            liveState.serving = team;
+            renderLive();
+        }
+    };
+    
+    window.changeSet = (s) => {
+        if (liveState.home > 0 || liveState.away > 0) { state.logs.push(`SET ${liveState.currentSet}: FCA ${liveState.home} - ${liveState.away} (${state.advName})`); }
+        liveState.currentSet = s; liveState.home = 0; liveState.away = 0; sync(); initLiveSet();
+    };
+    
+    window.addPoint = (team) => {
+        if(team === 'home') {
+            if(liveState.serving === 'away') {
+                rotate();
+            }
+            liveState.home++;
+            liveState.serving = 'home';
+        } else {
+            liveState.away++;
+            liveState.serving = 'away';
+        }
+        renderLive();
+    };
+    
+    window.removePoint = (team) => {
+        if(team === 'home' && liveState.home > 0) liveState.home--;
+        if(team === 'away' && liveState.away > 0) liveState.away--;
+        renderLive();
+    };
+    
+    function rotate() {
+        const oldCur = [...liveState.currentLineup];
+        const oldOrig = [...liveState.originalLineup];
+        const oldSub = [...liveState.substitutesLineup];
+        const oldExp = [...liveState.exceptionalLineup];
+        
+        liveState.currentLineup[5] = oldCur[2]; liveState.currentLineup[4] = oldCur[5]; liveState.currentLineup[3] = oldCur[4];
+        liveState.currentLineup[0] = oldCur[3]; liveState.currentLineup[1] = oldCur[0]; liveState.currentLineup[2] = oldCur[1];
+        
+        liveState.originalLineup[5] = oldOrig[2]; liveState.originalLineup[4] = oldOrig[5]; liveState.originalLineup[3] = oldOrig[4];
+        liveState.originalLineup[0] = oldOrig[3]; liveState.originalLineup[1] = oldOrig[0]; liveState.originalLineup[2] = oldOrig[1];
+        
+        liveState.substitutesLineup[5] = oldSub[2]; liveState.substitutesLineup[4] = oldSub[5]; liveState.substitutesLineup[3] = oldSub[4];
+        liveState.substitutesLineup[0] = oldSub[3]; liveState.substitutesLineup[1] = oldSub[0]; liveState.substitutesLineup[2] = oldSub[1];
+
+        liveState.exceptionalLineup[5] = oldExp[2]; liveState.exceptionalLineup[4] = oldExp[5]; liveState.exceptionalLineup[3] = oldExp[4];
+        liveState.exceptionalLineup[0] = oldExp[3]; liveState.exceptionalLineup[1] = oldExp[0]; liveState.exceptionalLineup[2] = oldExp[1];
+
+        checkLiberoRotationRule();
+    }
+    
+    window.undoRotate = () => {
+        const oldCur = [...liveState.currentLineup];
+        const oldOrig = [...liveState.originalLineup];
+        const oldSub = [...liveState.substitutesLineup];
+        const oldExp = [...liveState.exceptionalLineup];
+        
+        liveState.currentLineup[2] = oldCur[5]; liveState.currentLineup[5] = oldCur[4]; liveState.currentLineup[4] = oldCur[3];
+        liveState.currentLineup[3] = oldCur[0]; liveState.currentLineup[0] = oldCur[1]; liveState.currentLineup[1] = oldCur[2];
+        
+        liveState.originalLineup[2] = oldOrig[5]; liveState.originalLineup[5] = oldOrig[4]; liveState.originalLineup[4] = oldOrig[3];
+        liveState.originalLineup[3] = oldOrig[0]; liveState.originalLineup[0] = oldOrig[1]; liveState.originalLineup[1] = oldOrig[2];
+
+        liveState.substitutesLineup[2] = oldSub[5]; liveState.substitutesLineup[5] = oldSub[4]; liveState.substitutesLineup[4] = oldSub[3];
+        liveState.substitutesLineup[3] = oldSub[0]; liveState.substitutesLineup[0] = oldSub[1]; liveState.substitutesLineup[1] = oldSub[2];
+
+        liveState.exceptionalLineup[2] = oldExp[5]; liveState.exceptionalLineup[5] = oldExp[4]; liveState.exceptionalLineup[4] = oldExp[3];
+        liveState.exceptionalLineup[3] = oldExp[0]; liveState.exceptionalLineup[0] = oldExp[1]; liveState.exceptionalLineup[1] = oldExp[2];
+        
+        renderLive();
+    };
+
+    function checkLiberoRotationRule() {
+        const labels = [4, 3, 2, 5, 6, 1];
+        liveState.currentLineup.forEach((num, i) => {
+            if(state.roles[num] === 'LIB') {
+                const posAparicao = labels[i];
+                if(posAparicao === 4 || posAparicao === 3 || posAparicao === 2) {
+                    alert(`⚠️ ATENÇÃO: A Líbero (${getDisplayName(num)} - Nº ${num}) rodou para a P${posAparicao} (Rede)! Ela deve ser substituída de volta.`);
+                }
+            }
+        });
+    }
+
+    window.openSubModal = (index, forceExceptionalView = false) => {
+        selectedIndexForSub = index;
+        const labels = [4, 3, 2, 5, 6, 1];
+        const posAtual = labels[index];
+        const atletaAtualNum = liveState.currentLineup[index];
+        const donoOriginalNum = liveState.originalLineup[index];
+        const subInfo = liveState.substitutesLineup[index];
+        const atualSet = liveState.currentSet;
+        const fechadasNoSet = liveState.closedPositions[atualSet] || [];
+        const maxSubsAtingido = liveState.subsCount[atualSet] >= 6;
+        
+        const modal = document.getElementById('sub-modal');
+        const title = document.getElementById('sub-modal-title');
+        const container = document.getElementById('modal-options-container');
+        
+        title.innerText = `Posição P${posAtual} (Atual: Nº ${atletaAtualNum} - ${getDisplayName(atletaAtualNum)})`;
+        container.innerHTML = "";
+        
+        const liberosConvocadas = state.atletas.filter(a => state.conv.includes(a.n) && state.roles[a.n] === 'LIB');
+        const isLinhaDeTras = (posAtual === 5 || posAtual === 6 || posAtual === 1);
+        const isLiberoAtivaNestaPos = state.roles[atletaAtualNum] === 'LIB';
+
+        if (forceExceptionalView) {
+            container.innerHTML += `<p style="font-size:0.75rem; color:#f0abfc; text-align:center; font-weight:bold; margin-bottom:10px;">🚨 SELECIONE A ATLETA PARA SUBSTITUIÇÃO EXCEPCIONAL</p>`;
+            
+            const emQuadra = liveState.currentLineup.map(n => String(n));
+            const noBanco = state.atletas.filter(a => 
+                state.conv.includes(a.n) && 
+                !emQuadra.includes(String(a.n)) && 
+                state.roles[a.n] !== 'LIB'
+            );
+
+            if(noBanco.length === 0) {
+                container.innerHTML += `<p style="font-size:0.65rem; color:var(--gray-light); text-align:center;">Nenhuma atleta elegível disponível no banco para substituição excepcional.</p>`;
+            } else {
+                noBanco.forEach(bancoAth => {
+                    container.innerHTML += `<button class="modal-btn" style="background: #a855f7; color: white; border: none;" onclick="executeExceptionalSub(${bancoAth.n})">Entra Nº ${bancoAth.n} (${getDisplayName(bancoAth)}) [Excepcional]</button>`;
+                });
+            }
+            container.innerHTML += `<button class="modal-btn" style="background: #3f3f46; color: white;" onclick="openSubModal(${index})">⬅ Voltar</button>`;
+            return;
+        }
+
+        if (isLinhaDeTras && !isLiberoAtivaNestaPos) {
+            liberosConvocadas.forEach(lib => {
+                container.innerHTML += `<button class="modal-btn" style="background: var(--accent); color: white;" onclick="executeLiberoIn(${lib.n})">ENTRADA LÍBERO (Nº ${lib.n} - ${getDisplayName(lib)})</button>`;
+            });
+        } else if (isLiberoAtivaNestaPos) {
+            container.innerHTML += `<button class="modal-btn sub-return-hint" onclick="executeLiberoOut(${donoOriginalNum})">SAÍDA LÍBERO ↩ (Retorna obrigatoriamente Nº ${donoOriginalNum} - ${getDisplayName(donoOriginalNum)})</button>`;
+        }
+
+        if (!isLiberoAtivaNestaPos) {
+            container.innerHTML += `<div style="font-size:0.7rem; font-weight:bold; color:var(--gray-light); margin: 10px 0 5px 0; text-align:center;">SUBSTITUIÇÃO REGULAR</div>`;
+            
+            const posicaoBloqueada = fechadasNoSet.includes(String(donoOriginalNum));
+
+            if (posicaoBloqueada || maxSubsAtingido) {
+                let razaoText = posicaoBloqueada 
+                    ? "Regra FIVB: O titular já regressou. Esta vaga não permite novas trocas regulares."
+                    : "Regra FIVB: Limite de 6 substituições do set já foi atingido.";
+
+                container.innerHTML += `
+                    <p style="font-size:0.7rem; color:var(--accent); text-align:center; font-weight:bold; padding: 10px; background: rgba(244, 63, 94, 0.1); border-radius: 8px; border: 1px solid var(--accent); margin-bottom:5px;">
+                        🔒 TROCAS REGULARES ESGOTADAS<br>
+                        <span style="font-size:0.6rem; color:var(--gray-light); font-weight:normal;">${razaoText}</span>
+                    </p>
+                `;
+            }
+            else if (subInfo && String(subInfo.substitutoNum) === String(atletaAtualNum)) {
+                const titularOrig = subInfo.titularNum;
+
+                container.innerHTML += `
+                    <p style="font-size:0.65rem; color:var(--warning); text-align:center; margin:0 0 5px 0;">Regra FIVB: Atleta substituta em campo. Apenas a titular original pode reingressar.</p>
+                    <button class="modal-btn sub-return-hint" onclick="executeRegularSub(${titularOrig})">
+                        REGRESSO TITULAR ↩ (Entra Nº ${titularOrig} - ${getDisplayName(titularOrig)})
+                    </button>
+                `;
+            } 
+            else {
+                const usadasNoSet = liveState.usedSubstitutes[atualSet] || [];
+                const noBanco = state.atletas.filter(a => 
+                    state.conv.includes(a.n) && 
+                    !liveState.currentLineup.includes(String(a.n)) && 
+                    !liveState.currentLineup.includes(a.n) && 
+                    state.roles[a.n] !== 'LIB' &&
+                    !usadasNoSet.includes(String(a.n)) &&
+                    !usadasNoSet.includes(a.n)
+                );
+                
+                if(noBanco.length === 0) {
+                    container.innerHTML += `<p style="font-size:0.65rem; color:var(--gray-light); text-align:center;">Nenhuma atleta reserva elegível disponível no banco para este set.</p>`;
+                } else {
+                    noBanco.forEach(bancoAth => {
+                        container.innerHTML += `<button class="modal-btn" style="background: var(--card-inner); color: white; border: 1px solid var(--border);" onclick="executeRegularSub(${bancoAth.n})">Entra Nº ${bancoAth.n} (${getDisplayName(bancoAth)})</button>`;
+                    });
+                }
+            }
+
+            container.innerHTML += `
+                <button class="modal-btn btn-exceptional-trigger" onclick="openSubModal(${index}, true)">
+                    🚨 SUBSTITUIÇÃO EXCEPCIONAL (Lesão / Expulsão)
+                </button>
+            `;
+        }
+        
+        modal.style.display = "flex";
+    };
+
+    window.closeSubModal = () => {
+        document.getElementById('sub-modal').style.display = "none";
+    };
+
+    window.executeLiberoIn = (libNum) => {
+        const antigoNum = liveState.currentLineup[selectedIndexForSub];
+        liveState.currentLineup[selectedIndexForSub] = String(libNum);
+        
+        state.logs.push(`SET ${liveState.currentSet}: Entrada Líbero Nº ${libNum} (${getDisplayName(libNum)}) para o lugar da Nº ${antigoNum} (${getDisplayName(antigoNum)}) na P${[4,3,2,5,6,1][selectedIndexForSub]}`);
+        sync();
+        closeSubModal();
+        renderLive();
+    };
+
+    window.executeLiberoOut = (originalNum) => {
+        const libNum = liveState.currentLineup[selectedIndexForSub];
+        liveState.currentLineup[selectedIndexForSub] = String(originalNum);
+        
+        state.logs.push(`SET ${liveState.currentSet}: Saída Líbero Nº ${libNum} -> Retorna Nº ${originalNum} (${getDisplayName(originalNum)})`);
+        sync();
+        closeSubModal();
+        renderLive();
+    };
+
+    window.executeRegularSub = (entraNum) => {
+        const atualSet = liveState.currentSet;
+        if (liveState.subsCount[atualSet] >= 6) {
+            alert("Limite máximo de 6 substituições neste set já foi atingido!");
+            return;
+        }
+        
+        const saiNum = liveState.currentLineup[selectedIndexForSub];
+        const subInfo = liveState.substitutesLineup[selectedIndexForSub];
+
+        if (subInfo && String(subInfo.substitutoNum) === String(saiNum)) {
+            liveState.currentLineup[selectedIndexForSub] = String(entraNum);
+            liveState.originalLineup[selectedIndexForSub] = String(entraNum);
+            
+            if (!liveState.usedSubstitutes[atualSet]) liveState.usedSubstitutes[atualSet] = [];
+            liveState.usedSubstitutes[atualSet].push(String(saiNum));
+            
+            if (!liveState.closedPositions[atualSet]) liveState.closedPositions[atualSet] = [];
+            liveState.closedPositions[atualSet].push(String(entraNum));
+
+            liveState.substitutesLineup[selectedIndexForSub] = null;
+        } 
+        else {
+            liveState.currentLineup[selectedIndexForSub] = String(entraNum);
+            liveState.substitutesLineup[selectedIndexForSub] = {
+                titularNum: String(saiNum),
+                substitutoNum: String(entraNum)
+            };
+        }
+        
+        liveState.subsCount[atualSet]++;
+        
+        state.logs.push(`SET ${atualSet} - Sub ${liveState.subsCount[atualSet]}/6: Saiu Nº ${saiNum} (${getDisplayName(saiNum)}), Entrou Nº ${entraNum} (${getDisplayName(entraNum)})`);
+        sync();
+        closeSubModal();
+        renderLive();
+    };
+
+    window.executeExceptionalSub = (entraNum) => {
+        const saiNum = liveState.currentLineup[selectedIndexForSub];
+        const atualSet = liveState.currentSet;
+
+        liveState.currentLineup[selectedIndexForSub] = String(entraNum);
+        liveState.exceptionalLineup[selectedIndexForSub] = true;
+
+        state.logs.push(`⚠️ LESÃO/EXPULSÃO - SUB EXCEPCIONAL SET ${atualSet}: Saiu Nº ${saiNum} (${getDisplayName(saiNum)}), Entrou Nº ${entraNum} (${getDisplayName(entraNum)})`);
+        sync();
+        closeSubModal();
+        renderLive();
+    };
+    
+    window.resetLive = () => { 
+        if(confirm("Reiniciar placar e substituições deste set?")) { 
+            liveState.home = 0; 
+            liveState.away = 0; 
+            liveState.serving = liveState.initialServer; 
+            liveState.subsCount[liveState.currentSet] = 0;
+            liveState.usedSubstitutes[liveState.currentSet] = [];
+            liveState.closedPositions[liveState.currentSet] = [];
+            initLiveSet(); 
+        } 
+    };
+    
+    function updateTacticHint() {
+        const labels = [4, 3, 2, 5, 6, 1]; let setterPos = null;
+        liveState.currentLineup.forEach((num, i) => { if (state.roles[num] === 'PAS') setterPos = labels[i]; });
+        const posTitle = document.getElementById('tactic-pos-title'); const posDesc = document.getElementById('tactic-pos-desc');
+        const descriptions = {
+            1: ["PASSADORA EM P1", "Distribuição vinda da linha de trás (Zona 1). Ponta e Central prontas para atacar na rede."],
+            6: ["PASSADORA EM P6", "Infiltração pelo centro da quadra. Passadora avança entre a P2 e P3 para organizar."],
+            5: ["PASSADORA EM P5", "Transição vinda da esquerda (Zona 5). Cobertura de ataque atenta à ponta."],
+            4: ["PASSADORA EM P4", "Passadora na rede (Zona de ataque). Troca rápida com a P2 após o serviço para fixar."],
+            3: ["PASSADORA EM P3", "Passadora no centro da rede. Deslocamento rápido para a saída (P2) para libertar o meio."],
+            2: ["PASSADORA EM P2", "Passadora na saída de rede. Posição ideal e definitiva de distribuição já alcançada."]
+        };
+        if (setterPos && descriptions[setterPos]) { posTitle.innerText = descriptions[setterPos][0]; posDesc.innerText = descriptions[setterPos][1]; }
+        else { posTitle.innerText = "SISTEMA EM QUADRA"; posDesc.innerText = "Defina as atletas como PAS (Passadora) na lista para visualizar as dinâmicas de transição por rotação."; }
+    }
+    
+    function renderLive() {
+        document.getElementById('score-home').innerText = liveState.home; 
+        document.getElementById('score-away').innerText = liveState.away;
+        document.getElementById('sub-counter-view').innerText = `${liveState.subsCount[liveState.currentSet]} / 6`;
+        
+        const court = document.getElementById('live-court-render'); 
+        const labels = [4, 3, 2, 5, 6, 1];
+        
+        court.innerHTML = liveState.currentLineup.map((num, i) => {
+            const isLibero = state.roles[num] === 'LIB';
+            const subInfo = liveState.substitutesLineup[i];
+            const isSubstitutedActive = subInfo && String(subInfo.substitutoNum) === String(num);
+            const isExceptional = liveState.exceptionalLineup[i];
+            
+            let extraClass = "";
+            if (isExceptional) extraClass = "exceptional-active";
+            else if (isLibero) extraClass = "libero-active";
+            else if (isSubstitutedActive) extraClass = "substitute-active";
+
+            const nameShow = getDisplayName(num);
+
+            return `
+                <div class="live-pos ${extraClass}" onclick="openSubModal(${i})">
+                    <span class="pos-label">P${labels[i]}</span>
+                    <span class="num-display">${num}</span>
+                    <span class="nick-display">${nameShow}</span>
+                    ${(liveState.serving === 'home' && labels[i] === 1) ? '<div class="server-ball"></div>' : ''}
+                </div>
+            `;
+        }).join('');
+        updateTacticHint();
+    }
+    
+    function render() {
+        document.getElementById('athlete-list').innerHTML = state.atletas.sort((a,b)=>a.n-b.n).map(a => `
+            <div class="athlete-card">
+                <div style="display:flex; flex-direction:column; gap:2px; flex:1;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <div class="athlete-num">${a.n}</div>
+                        <span style="font-size:0.75rem; font-weight:700; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${getDisplayName(a)}</span>
+                    </div>
+                    <select class="role-select" onchange="updateRole(${a.n}, this.value)">
+                        <option value="">FUNÇÃO</option>
+                        <option value="PAS" ${state.roles[a.n]=='PAS'?'selected':''}>PAS (Lev)</option>
+                        <option value="ENT" ${state.roles[a.n]=='ENT'?'selected':''}>ENT (Pon)</option>
+                        <option value="OPO" ${state.roles[a.n]=='OPO'?'selected':''}>OPO</option>
+                        <option value="CEN" ${state.roles[a.n]=='CEN'?'selected':''}>CEN</option>
+                        <option value="LIB" ${state.roles[a.n]=='LIB'?'selected':''}>LIB</option>
+                    </select>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <button class="btn-action-icon btn-edit" onclick="openEditModal(${a.n})">✏️</button>
+                    <input type="checkbox" class="switch" ${(state.conv || []).includes(a.n) ? 'checked' : ''} onchange="toggle(${a.n})">
+                    <button class="btn-action-icon btn-remove" onclick="removeAthlete(${a.n})">×</button>
+                </div>
+            </div>
+        `).join('');
+
+        document.getElementById('sets-container').innerHTML = [1,2,3,4,5].map(s => {
+            const res = validarSet(s); const convocadas = state.atletas.filter(a => state.conv.includes(a.n)).sort((a,b)=>a.n-b.n); const usadasNesteSet = [1,2,3,4,5,6].map(p => state.sets[`s${s}p${p}`]).filter(v => v);
+            return `
+            <div class="set-mini-court">
+                <div style="font-size:0.75rem; font-weight:800; color:var(--white); margin-bottom:8px; display:flex; justify-content:space-between;">SET ${s} <span style="color:${res.ok?'var(--success)':'var(--accent)'}">${res.ok?'✓':''}</span></div>
+                <div class="court-grid">
+                    ${[4,3,2,5,6,1].map(p => {
+                        const id = `s${s}p${p}`; const cur = state.sets[id];
+                        return `<div class="pos-box ${cur ? 'occupied' : ''}"><label style="font-size:0.45rem; color:var(--gray-light); display:block; margin-bottom:2px;">P${p}</label><select onchange="updatePos('${id}', this.value)"><option value="">-</option>${convocadas.map(a => { const jaUsada = usadasNesteSet.includes(String(a.n)) && cur != String(a.n); return jaUsada ? '' : `<option value="${a.n}" ${cur == a.n ? 'selected' : ''}>${a.n} - ${getDisplayName(a)}</option>`; }).join('')}</select></div>`;
+                    }).join('')}
+                </div>
+                <div class="msg-regra" style="color: var(--gray-light)">${res.msg}</div>
+            </div>`;
+        }).join('');
+        document.getElementById('logs-container').innerHTML = (state.logs || []).map(l => `<div class="log-item">${l}</div>`).join('') || "<p style='text-align:center; color:var(--gray-light); font-size:0.8rem;'>Sem registos salvos de sets.</p>";
+    }
+    window.clearLogs = () => { if(confirm("Limpar todo o histórico de jogo?")) { state.logs = []; sync(); } };
+</script>
+</body>
+</html>
